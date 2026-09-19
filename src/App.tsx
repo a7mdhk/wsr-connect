@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, Route, Routes } from "react-router";
 import { srcMembers } from "./data/srcMembers";
 import DutiesPage from "./DutiesPage";
@@ -76,6 +77,8 @@ function getSeniorMember(position: string) {
 }
 
 function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const navItems = [
     { label: "Home", to: "/" },
     { label: "Announcements", to: "/announcements" },
@@ -86,10 +89,12 @@ function Header() {
     { label: "Feedback", to: "/feedback" },
   ];
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header className="navbar">
       <div className="nav-inner">
-        <NavLink className="brand" to="/">
+        <NavLink className="brand" to="/" onClick={closeMenu}>
           <div className="brand-mark">W</div>
 
           <div>
@@ -100,12 +105,13 @@ function Header() {
           </div>
         </NavLink>
 
-        <nav className="nav-links">
+        <nav className="nav-links" aria-label="Primary navigation">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === "/"}
+              onClick={closeMenu}
               className={({ isActive }) =>
                 isActive ? "nav-link active" : "nav-link"
               }
@@ -115,10 +121,53 @@ function Header() {
           ))}
         </nav>
 
-        <NavLink className="portal-button" to="/portal">
-          School Portal →
-        </NavLink>
+        <div className="nav-actions">
+          <NavLink
+            className="portal-button"
+            to="/portal"
+            onClick={closeMenu}
+          >
+            School Portal →
+          </NavLink>
+
+          <button
+            className="mobile-menu-button"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={
+              menuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span aria-hidden="true">{menuOpen ? "×" : "☰"}</span>
+          </button>
+        </div>
       </div>
+
+      {menuOpen ? (
+        <nav
+          id="mobile-navigation"
+          className="mobile-nav"
+          aria-label="Mobile navigation"
+        >
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === "/"}
+              onClick={closeMenu}
+              className={({ isActive }) =>
+                isActive
+                  ? "mobile-nav-link active"
+                  : "mobile-nav-link"
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+      ) : null}
     </header>
   );
 }
@@ -442,7 +491,10 @@ function EventsPage() {
       <section className="section">
         <div className="events-list">
           {events.map((event) => (
-            <article className="event-row" key={event.title}>
+            <article
+              className="event-row event-row-static"
+              key={event.title}
+            >
               <div className="event-date">
                 <strong>{event.date}</strong>
                 <span>{event.month}</span>
@@ -452,8 +504,6 @@ function EventsPage() {
                 <span>{event.type}</span>
                 <h3>{event.title}</h3>
               </div>
-
-              <span className="event-arrow">→</span>
             </article>
           ))}
         </div>
@@ -483,7 +533,6 @@ function MemberCard({
 
       <div className="src-member-footer">
         <span>WSR Student Leadership</span>
-        <span className="src-member-arrow">→</span>
       </div>
     </article>
   );
@@ -698,31 +747,25 @@ function FeedbackPage() {
           <h2>Tell us what could be better.</h2>
 
           <p>
-            This form is currently a frontend placeholder. Later it can be
-            connected to an approved school feedback system.
+            The public feedback system is not connected yet. We are keeping
+            submissions disabled until an approved school feedback channel is
+            in place.
           </p>
 
-          <form
-            className="feedback-form"
-            onSubmit={(event) => event.preventDefault()}
-          >
-            <label>
-              Name
-              <input type="text" placeholder="Your name" />
-            </label>
+          <div className="feedback-status">
+            <div className="feedback-status-marker" aria-hidden="true">
+              i
+            </div>
 
-            <label>
-              Message
-              <textarea
-                rows={6}
-                placeholder="Share your suggestion..."
-              />
-            </label>
+            <div>
+              <strong>Feedback submissions are coming soon.</strong>
 
-            <button className="primary-button" type="submit">
-              Submit Feedback
-            </button>
-          </form>
+              <p>
+                Nothing entered on this page is currently collected or sent
+                anywhere.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </>
@@ -785,16 +828,24 @@ function Layout() {
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />
+
           <Route
             path="/announcements"
             element={<AnnouncementsPage />}
           />
+
           <Route path="/events" element={<EventsPage />} />
+
           <Route path="/src" element={<SRCPage />} />
+
           <Route path="/duties" element={<DutiesPage />} />
+
           <Route path="/resources" element={<ResourcesPage />} />
+
           <Route path="/feedback" element={<FeedbackPage />} />
+
           <Route path="/portal" element={<PortalPage />} />
+
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
