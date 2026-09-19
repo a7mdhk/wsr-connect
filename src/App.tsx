@@ -1,4 +1,6 @@
 import { NavLink, Route, Routes } from "react-router";
+import { srcMembers } from "./data/srcMembers";
+import DutiesPage from "./DutiesPage";
 import "./App.css";
 
 const announcements = [
@@ -50,12 +52,36 @@ const priorities = [
   "Create more student-led initiatives",
 ];
 
+const srcCategories = [
+  "House & Sports Leadership",
+  "Innovation",
+  "Sustainability",
+  "Senior Prefects",
+  "Prefects",
+  "Events",
+  "Other Leadership",
+];
+
+const seniorLeadershipOrder = [
+  "Head Boy",
+  "Head Girl",
+  "Assistant Head Boy",
+  "Assistant Head Girl",
+  "Deputy Head Boy",
+  "Deputy Head Girl",
+];
+
+function getSeniorMember(position: string) {
+  return srcMembers.find((member) => member.position === position);
+}
+
 function Header() {
   const navItems = [
     { label: "Home", to: "/" },
     { label: "Announcements", to: "/announcements" },
     { label: "Events", to: "/events" },
     { label: "SRC", to: "/src" },
+    { label: "Duties", to: "/duties" },
     { label: "Resources", to: "/resources" },
     { label: "Feedback", to: "/feedback" },
   ];
@@ -116,29 +142,23 @@ function Footer() {
   );
 }
 
-function Layout() {
+function PageHero({
+  eyebrow,
+  title,
+  description,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+}) {
   return (
-    <div className="app">
-      <Header />
-
-      <main>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/announcements"
-            element={<AnnouncementsPage />}
-          />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/src" element={<SRCPage />} />
-          <Route path="/resources" element={<ResourcesPage />} />
-          <Route path="/feedback" element={<FeedbackPage />} />
-          <Route path="/portal" element={<PortalPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
-
-      <Footer />
-    </div>
+    <section className="page-hero">
+      <div className="page-hero-inner">
+        <span className="eyebrow">{eyebrow}</span>
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </div>
+    </section>
   );
 }
 
@@ -272,9 +292,9 @@ function HomePage() {
           <h3>Built around the WSR community.</h3>
 
           <p>
-            The public side keeps everyone informed. The private School Portal
-            will later provide personalised tools for students, teachers and
-            school leadership.
+            The public side keeps everyone informed. The private School
+            Portal will later provide personalised tools for students,
+            teachers and school leadership.
           </p>
 
           <div className="info-stat-grid">
@@ -359,36 +379,20 @@ function HomePage() {
             <small>SRC information and initiatives</small>
           </NavLink>
 
-          <NavLink to="/feedback" className="resource-card">
+          <NavLink to="/duties" className="resource-card">
             <span>03</span>
+            <strong>Duties & Timetables</strong>
+            <small>SRC duty locations and schedules</small>
+          </NavLink>
+
+          <NavLink to="/feedback" className="resource-card">
+            <span>04</span>
             <strong>Feedback</strong>
             <small>Share an idea or suggestion</small>
           </NavLink>
         </div>
       </section>
     </>
-  );
-}
-
-function PageHero({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <section className="page-hero">
-      <div className="page-hero-inner">
-        <span className="eyebrow">{eyebrow}</span>
-
-        <h1>{title}</h1>
-
-        <p>{description}</p>
-      </div>
-    </section>
   );
 }
 
@@ -458,48 +462,175 @@ function EventsPage() {
   );
 }
 
+function MemberCard({
+  position,
+  name,
+  grade,
+}: {
+  position: string;
+  name: string;
+  grade: string;
+}) {
+  return (
+    <article className="src-member-card">
+      <div className="src-member-top">
+        <span className="src-member-role">{position}</span>
+
+        <span className="src-member-grade">{grade}</span>
+      </div>
+
+      <h3>{name}</h3>
+
+      <div className="src-member-footer">
+        <span>WSR Student Leadership</span>
+        <span className="src-member-arrow">→</span>
+      </div>
+    </article>
+  );
+}
+
 function SRCPage() {
+  const seniorLeadership = seniorLeadershipOrder
+    .map((position) => getSeniorMember(position))
+    .filter(
+      (member): member is NonNullable<typeof member> =>
+        Boolean(member),
+    );
+
   return (
     <>
       <PageHero
         eyebrow="STUDENT LEADERSHIP"
         title="Student Representative Council"
-        description="A central space for understanding SRC priorities, projects, initiatives and student leadership at WSR."
+        description="Meet the students representing and leading the WSR community across leadership, houses, innovation, sustainability, events and student leadership."
       />
 
-      <section className="section split-section">
-        <div className="feature-panel">
-          <span className="eyebrow">CURRENT PRIORITIES</span>
+      <section className="section src-intro">
+        <div className="src-intro-card">
+          <div>
+            <span className="eyebrow">WSR SRC</span>
+            <h2>Meet the student leadership team.</h2>
+          </div>
 
-          <h2>What we're working on.</h2>
+          <div className="src-intro-stats">
+            <div>
+              <strong>{srcMembers.length}</strong>
+              <span>Listed roles</span>
+            </div>
 
-          <p>
-            These priorities represent the areas currently being developed by
-            student leadership.
-          </p>
-
-          <div className="priority-list">
-            {priorities.map((priority, index) => (
-              <div className="priority-item" key={priority}>
-                <span>0{index + 1}</span>
-                <strong>{priority}</strong>
-              </div>
-            ))}
+            <div>
+              <strong>{srcCategories.length + 1}</strong>
+              <span>Leadership areas</span>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div className="info-panel">
-          <div className="info-panel-header">
-            <span className="eyebrow">SRC</span>
-            <span className="info-number">01</span>
+      <section className="section src-section">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">HIGHEST LEADERSHIP</span>
+            <h2>Senior Leadership</h2>
           </div>
 
-          <h3>A place for student leadership to operate.</h3>
+          <span className="src-count">
+            {seniorLeadership.length} leaders
+          </span>
+        </div>
+
+        <div
+          className="src-senior-leadership"
+          style={{
+            display: "grid",
+            gap: "14px",
+          }}
+        >
+          {[0, 1, 2].map((pairIndex) => {
+            const first = seniorLeadership[pairIndex * 2];
+            const second = seniorLeadership[pairIndex * 2 + 1];
+
+            if (!first || !second) {
+              return null;
+            }
+
+            return (
+              <div
+                key={`${first.position}-${second.position}`}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                  gap: "14px",
+                }}
+              >
+                <MemberCard
+                  position={first.position}
+                  name={first.name}
+                  grade={first.grade}
+                />
+
+                <MemberCard
+                  position={second.position}
+                  name={second.name}
+                  grade={second.grade}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {srcCategories.map((category) => {
+        const members = srcMembers.filter(
+          (member) => member.category === category,
+        );
+
+        if (members.length === 0) {
+          return null;
+        }
+
+        return (
+          <section className="section src-section" key={category}>
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">SRC</span>
+                <h2>{category}</h2>
+              </div>
+
+              <span className="src-count">
+                {members.length}{" "}
+                {members.length === 1 ? "member" : "members"}
+              </span>
+            </div>
+
+            <div className="src-member-grid">
+              {members.map((member) => (
+                <MemberCard
+                  key={`${member.position}-${member.name}`}
+                  position={member.position}
+                  name={member.name}
+                  grade={member.grade}
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+
+      <section className="section">
+        <div className="src-contact-note">
+          <span className="eyebrow">CONTACT</span>
+
+          <h2>Need to reach student leadership?</h2>
 
           <p>
-            The eventual private SRC workspace will contain projects, tasks,
-            proposals, responsibilities, events and accountability tools.
+            Public contact details are intentionally not displayed here.
+            School-approved contact channels can be added to the School Portal
+            once authentication and permissions are implemented.
           </p>
+
+          <NavLink className="secondary-button" to="/feedback">
+            Send Feedback
+          </NavLink>
         </div>
       </section>
     </>
@@ -536,7 +667,10 @@ function ResourcesPage() {
       <section className="section">
         <div className="resource-page-grid">
           {resources.map((resource) => (
-            <article className="resource-card resource-page-card" key={resource.title}>
+            <article
+              className="resource-card resource-page-card"
+              key={resource.title}
+            >
               <span>{resource.number}</span>
               <strong>{resource.title}</strong>
               <small>{resource.description}</small>
@@ -610,7 +744,9 @@ function PortalPage() {
 
         <div className="portal-status">
           <strong>Coming next</strong>
-          <span>School-approved authentication and role-based access.</span>
+          <span>
+            School-approved authentication and role-based access.
+          </span>
         </div>
 
         <NavLink className="secondary-button" to="/">
@@ -638,6 +774,33 @@ function NotFoundPage() {
         </NavLink>
       </div>
     </section>
+  );
+}
+
+function Layout() {
+  return (
+    <div className="app">
+      <Header />
+
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/announcements"
+            element={<AnnouncementsPage />}
+          />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/src" element={<SRCPage />} />
+          <Route path="/duties" element={<DutiesPage />} />
+          <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
+          <Route path="/portal" element={<PortalPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
+
+      <Footer />
+    </div>
   );
 }
 
