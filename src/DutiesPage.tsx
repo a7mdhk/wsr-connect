@@ -35,21 +35,33 @@ function PageHeading() {
   return (
     <section className="duties-hero">
       <div className="duties-hero-inner">
-        <span className="eyebrow">SRC DUTY ROTATIONS</span>
+        <div className="duties-hero-top">
+          <div>
+            <span className="eyebrow">SRC DUTY ROTATIONS</span>
 
-        <h1>
-          Duties,
-          <span> schedules & timetables.</span>
-        </h1>
+            <h1>
+              Duties,
+              <span> schedules & timetables.</span>
+            </h1>
 
-        <p>
-          The public duty directory for SRC break coverage, transition duty
-          and corridor duty at WSR.
-        </p>
+            <p>
+              The public duty directory for SRC break coverage, transition
+              duty and corridor duty at WSR.
+            </p>
 
-        <div className="duties-hero-meta">
-          <span>2027 SRC Duty Rotations</span>
-          <span>Public schedule</span>
+            <div className="duties-hero-meta">
+              <span>2027 SRC Duty Rotations</span>
+              <span>Public schedule</span>
+            </div>
+          </div>
+
+          <button
+            className="print-schedule-button"
+            type="button"
+            onClick={() => window.print()}
+          >
+            Print full schedule
+          </button>
         </div>
       </div>
     </section>
@@ -258,10 +270,7 @@ function findBreakDuties(query: string): DutyFinderResult[] {
 function DutyFinder() {
   const [query, setQuery] = useState("");
 
-  const results = useMemo(
-    () => findBreakDuties(query),
-    [query],
-  );
+  const results = useMemo(() => findBreakDuties(query), [query]);
 
   return (
     <section className="duty-finder">
@@ -328,14 +337,13 @@ function DutyFinder() {
 
               <div className="duty-finder-result-main">
                 <strong>{result.location}</strong>
+
                 <span>
                   {result.period} · {formatDayRange(result.days)}
                 </span>
               </div>
 
-              {result.role ? (
-                <p>{result.role}</p>
-              ) : null}
+              {result.role ? <p>{result.role}</p> : null}
             </article>
           ))}
         </div>
@@ -441,6 +449,7 @@ function BreakDuties() {
       <div className="schedule-heading">
         <div>
           <span className="eyebrow">WEEKLY ASSIGNMENTS</span>
+
           <h2>
             {area === "downstairs" ? "Downstairs" : "Upstairs"} · {period}
           </h2>
@@ -457,6 +466,7 @@ function BreakDuties() {
 
       <div className="schedule-footnote">
         <span>Schedule source</span>
+
         <p>
           Names and locations are displayed from the supplied 2027 SRC Duty
           Rotations data. Some names are abbreviated in the source sheet.
@@ -515,6 +525,7 @@ function TimetableGrid({
               <tr key={location}>
                 <td>
                   <strong>{location}</strong>
+
                   <span className="gender-tag">
                     {gender === "girls" ? "Girls" : "Boys"}
                   </span>
@@ -545,6 +556,7 @@ function EmptyAssignmentNotice({
 
       <div>
         <strong>Assignments not published in the supplied sheet</strong>
+
         <p>{text}</p>
       </div>
     </div>
@@ -601,6 +613,7 @@ function TransitionDuties() {
       <div className="schedule-heading">
         <div>
           <span className="eyebrow">TRANSITION TIMETABLE</span>
+
           <h2>
             {gender === "girls" ? "Girls" : "Boys"} · {day}
           </h2>
@@ -627,7 +640,9 @@ function TransitionDuties() {
 
       <section className="duty-guidance">
         <span className="eyebrow">ROLE</span>
+
         <h3>Transition duty instructions</h3>
+
         <p>{transitionDutyRole}</p>
       </section>
     </>
@@ -684,6 +699,7 @@ function CorridorDuties() {
       <div className="schedule-heading">
         <div>
           <span className="eyebrow">CORRIDOR TIMETABLE</span>
+
           <h2>
             {gender === "girls" ? "Girls" : "Boys"} · {day}
           </h2>
@@ -710,10 +726,308 @@ function CorridorDuties() {
 
       <section className="duty-guidance">
         <span className="eyebrow">ROLE</span>
+
         <h3>Corridor duty instructions</h3>
+
         <p>{corridorDutyRole}</p>
       </section>
     </>
+  );
+}
+
+function PrintableBreakSchedule({
+  area,
+  period,
+}: {
+  area: BreakArea;
+  period: BreakPeriod;
+}) {
+  const posts =
+    area === "downstairs"
+      ? downstairsBreakDuties[period]
+      : upstairsBreakDuties[period];
+
+  return (
+    <section className="print-section">
+      <div className="print-section-heading">
+        <div>
+          <span className="print-kicker">BREAK DUTY</span>
+
+          <h2>
+            {area === "downstairs" ? "Downstairs" : "Upstairs"} · {period}
+          </h2>
+        </div>
+
+        <span>
+          {area === "downstairs"
+            ? "Monday–Thursday"
+            : "Monday–Friday"}
+        </span>
+      </div>
+
+      <table className="print-table">
+        <thead>
+          <tr>
+            <th>Duty location</th>
+
+            {schoolDays.map((day) => (
+              <th key={day}>
+                {dayShortLabels[day]}
+
+                <small>
+                  {area === "downstairs" && day === "Friday"
+                    ? "Not listed"
+                    : period}
+                </small>
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {posts.map((post, index) => (
+            <tr key={`${post.location}-${index}`}>
+              <td>
+                <strong>{post.location}</strong>
+
+                {post.role ? (
+                  <small className="print-role">{post.role}</small>
+                ) : null}
+              </td>
+
+              {schoolDays.map((day) => (
+                <td key={day}>
+                  {post.assignments[day]?.length ? (
+                    post.assignments[day]?.join(", ")
+                  ) : area === "downstairs" && day === "Friday" ? (
+                    "—"
+                  ) : (
+                    "Unassigned"
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
+function PrintableTimetable({
+  title,
+  type,
+  daysLabel,
+  slots,
+}: {
+  title: string;
+  type: "transition" | "corridor";
+  daysLabel: string;
+  slots: typeof transitionDutyTimes;
+}) {
+  const locations =
+    type === "transition"
+      ? transitionDutyLocations
+      : corridorDutyLocations;
+
+  return (
+    <section className="print-section">
+      <div className="print-section-heading">
+        <div>
+          <span className="print-kicker">
+            {type === "transition"
+              ? "TRANSITION DUTY"
+              : "CORRIDOR DUTY"}
+          </span>
+
+          <h2>{title}</h2>
+        </div>
+
+        <span>{daysLabel}</span>
+      </div>
+
+      <table className="print-table print-timetable">
+        <thead>
+          <tr>
+            <th>Duty group</th>
+            <th>Duty location</th>
+
+            {slots.map((slot) => (
+              <th key={slot.label}>
+                {slot.label}
+                <small>{slot.time}</small>
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {(["Girls", "Boys"] as const).flatMap((group) =>
+            locations.map((location) => (
+              <tr key={`${group}-${location}`}>
+                <td>{group}</td>
+
+                <td>
+                  <strong>{location}</strong>
+                </td>
+
+                {slots.map((slot) => (
+                  <td key={slot.label}>Unassigned</td>
+                ))}
+              </tr>
+            )),
+          )}
+        </tbody>
+      </table>
+
+      <div className="print-notice">
+        No student assignments were populated in the supplied spreadsheet
+        for this duty type. Slots are intentionally shown as{" "}
+        <strong>Unassigned</strong>.
+      </div>
+    </section>
+  );
+}
+
+function PrintableDutySection({
+  label,
+  title,
+  children,
+}: {
+  label: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="print-section">
+      <div className="print-section-heading">
+        <div>
+          <span className="print-kicker">{label}</span>
+
+          <h2>{title}</h2>
+        </div>
+      </div>
+
+      {children}
+    </section>
+  );
+}
+
+function PrintableSchedule() {
+  return (
+    <section className="duties-print">
+      <header className="print-header">
+        <div>
+          <span className="print-kicker">WSR CONNECT</span>
+
+          <h1>2027 SRC Duty Rotations</h1>
+
+          <p>
+            GEMS Westminster School – RAK · Printable duty schedule
+          </p>
+        </div>
+
+        <div className="print-brand">
+          <strong>WSR</strong>
+          <span>Connect</span>
+        </div>
+      </header>
+
+      <PrintableBreakSchedule
+        area="downstairs"
+        period="Break 1"
+      />
+
+      <PrintableBreakSchedule
+        area="downstairs"
+        period="Break 2"
+      />
+
+      <PrintableBreakSchedule
+        area="upstairs"
+        period="Break 1"
+      />
+
+      <PrintableBreakSchedule
+        area="upstairs"
+        period="Break 2"
+      />
+
+      <PrintableTimetable
+        title="Transition timetable · Monday–Thursday"
+        type="transition"
+        daysLabel="Monday–Thursday"
+        slots={transitionDutyTimes}
+      />
+
+      <PrintableTimetable
+        title="Transition timetable · Friday"
+        type="transition"
+        daysLabel="Friday"
+        slots={fridayTransitionTimes}
+      />
+
+      <PrintableTimetable
+        title="Corridor timetable · Monday–Thursday"
+        type="corridor"
+        daysLabel="Monday–Thursday"
+        slots={transitionDutyTimes}
+      />
+
+      <PrintableTimetable
+        title="Corridor timetable · Friday"
+        type="corridor"
+        daysLabel="Friday"
+        slots={fridayTransitionTimes}
+      />
+
+      <PrintableDutySection
+        label="ABSENCE COVER"
+        title="Approved volunteers"
+      >
+        <div className="print-volunteer-grid">
+          <div>
+            <strong>Girls (V)</strong>
+            <p>{approvedVolunteers.girls.join(" · ")}</p>
+          </div>
+
+          <div>
+            <strong>Boys (V)</strong>
+            <p>{approvedVolunteers.boys.join(" · ")}</p>
+          </div>
+        </div>
+
+        <div className="print-procedure">
+          <strong>Coverage procedure</strong>
+          <p>{coverageInstructions}</p>
+        </div>
+      </PrintableDutySection>
+
+      <PrintableDutySection
+        label="ROLE INSTRUCTIONS"
+        title="Duty guidance"
+      >
+        <div className="print-guidance-grid">
+          <article>
+            <strong>Transition duty</strong>
+            <p>{transitionDutyRole}</p>
+          </article>
+
+          <article>
+            <strong>Corridor duty</strong>
+            <p>{corridorDutyRole}</p>
+          </article>
+        </div>
+      </PrintableDutySection>
+
+      <footer className="print-footer">
+        <span>WSR Connect · 2027 SRC Duty Rotations</span>
+
+        <span>
+          Names and assignments are reproduced from the supplied schedule.
+        </span>
+      </footer>
+    </section>
   );
 }
 
@@ -722,62 +1036,72 @@ export default function DutiesPage() {
 
   return (
     <>
-      <PageHeading />
+      <div className="duties-screen">
+        <PageHeading />
 
-      <main className="duties-page">
-        <section className="duties-nav-section">
-          <div className="duties-section-tabs">
-            <TabButton
-              active={section === "breaks"}
-              onClick={() => setSection("breaks")}
-            >
-              Break Duty
-            </TabButton>
+        <main className="duties-page">
+          <section className="duties-nav-section">
+            <div className="duties-section-tabs">
+              <TabButton
+                active={section === "breaks"}
+                onClick={() => setSection("breaks")}
+              >
+                Break Duty
+              </TabButton>
 
-            <TabButton
-              active={section === "transition"}
-              onClick={() => setSection("transition")}
-            >
-              Transition Duty
-            </TabButton>
+              <TabButton
+                active={section === "transition"}
+                onClick={() => setSection("transition")}
+              >
+                Transition Duty
+              </TabButton>
 
-            <TabButton
-              active={section === "corridor"}
-              onClick={() => setSection("corridor")}
-            >
-              Corridor Duty
-            </TabButton>
-          </div>
-        </section>
+              <TabButton
+                active={section === "corridor"}
+                onClick={() => setSection("corridor")}
+              >
+                Corridor Duty
+              </TabButton>
+            </div>
+          </section>
 
-        {section === "breaks" ? (
-          <BreakDuties />
-        ) : section === "transition" ? (
-          <TransitionDuties />
-        ) : (
-          <CorridorDuties />
-        )}
+          {section === "breaks" ? (
+            <BreakDuties />
+          ) : section === "transition" ? (
+            <TransitionDuties />
+          ) : (
+            <CorridorDuties />
+          )}
 
-        <section className="duty-bottom-grid">
-          <div className="duty-bottom-card">
-            <span className="eyebrow">PUBLIC SCHEDULE</span>
-            <h3>Everything is organised around the duty location.</h3>
-            <p>
-              Break coverage is organised by physical post. Transition and
-              corridor coverage is organised by lesson period and corridor.
-            </p>
-          </div>
+          <section className="duty-bottom-grid">
+            <div className="duty-bottom-card">
+              <span className="eyebrow">PUBLIC SCHEDULE</span>
 
-          <div className="duty-bottom-card">
-            <span className="eyebrow">ACCOUNTABILITY</span>
-            <h3>Do not leave an assigned post uncovered.</h3>
-            <p>
-              The supplied schedule requires SRC members to arrange coverage in
-              advance when they cannot complete their assigned duty.
-            </p>
-          </div>
-        </section>
-      </main>
+              <h3>
+                Everything is organised around the duty location.
+              </h3>
+
+              <p>
+                Break coverage is organised by physical post. Transition and
+                corridor coverage is organised by lesson period and corridor.
+              </p>
+            </div>
+
+            <div className="duty-bottom-card">
+              <span className="eyebrow">ACCOUNTABILITY</span>
+
+              <h3>Do not leave an assigned post uncovered.</h3>
+
+              <p>
+                The supplied schedule requires SRC members to arrange coverage
+                in advance when they cannot complete their assigned duty.
+              </p>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <PrintableSchedule />
     </>
   );
 }

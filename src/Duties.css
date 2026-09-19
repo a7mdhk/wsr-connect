@@ -14,6 +14,13 @@
   margin: 0 auto;
 }
 
+.duties-hero-top {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 40px;
+}
+
 .duties-hero h1 {
   max-width: 900px;
   margin: 0;
@@ -49,6 +56,34 @@
   color: var(--grey);
   font-size: 11px;
   font-weight: 700;
+}
+
+.print-schedule-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid #cfd6dd;
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--blue-dark);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.print-schedule-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--blue);
+  background: var(--blue-light);
+  box-shadow: 0 8px 20px rgba(17, 17, 17, 0.06);
 }
 
 .duties-page {
@@ -503,9 +538,299 @@
   line-height: 1.7;
 }
 
+/* PRINT LAYOUT */
+
+.duties-print {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  body {
+    min-width: 0;
+    color: #111111;
+  }
+
+  .navbar,
+  .footer,
+  .duties-screen {
+    display: none !important;
+  }
+
+  .duties-print {
+    display: block;
+    width: 100%;
+    color: #111111;
+    font-family:
+      Arial,
+      Helvetica,
+      sans-serif;
+    font-size: 9pt;
+  }
+
+  .print-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20mm;
+    padding-bottom: 8mm;
+    border-bottom: 2px solid #123b6d;
+  }
+
+  .print-header h1 {
+    margin: 2mm 0 1.5mm;
+    color: #111111;
+    font-size: 28pt;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .print-header p {
+    margin: 0;
+    color: #555555;
+    font-size: 9pt;
+  }
+
+  .print-kicker {
+    display: block;
+    color: #1e5aa8;
+    font-size: 7.5pt;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .print-brand {
+    display: grid;
+    gap: 0;
+    min-width: 30mm;
+    text-align: right;
+    color: #123b6d;
+  }
+
+  .print-brand strong {
+    font-size: 20pt;
+    line-height: 1;
+  }
+
+  .print-brand span {
+    margin-top: 1mm;
+    font-size: 8pt;
+    font-weight: 700;
+  }
+
+  .print-section {
+    margin-top: 9mm;
+    break-inside: auto;
+  }
+
+  .print-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 10mm;
+    margin-bottom: 3mm;
+    break-after: avoid;
+  }
+
+  .print-section-heading h2 {
+    margin: 1mm 0 0;
+    color: #111111;
+    font-size: 16pt;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+
+  .print-section-heading > span {
+    color: #555555;
+    font-size: 8pt;
+    font-weight: 700;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    break-inside: auto;
+  }
+
+  .print-table th,
+  .print-table td {
+    padding: 2mm 2.2mm;
+    border: 0.25mm solid #bfc5ca;
+    vertical-align: top;
+    text-align: left;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .print-table th {
+    background: #eef0f2;
+    color: #3f4348;
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .print-table th small {
+    display: block;
+    margin-top: 1mm;
+    color: #73777c;
+    font-size: 6.5pt;
+    font-weight: 700;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .print-table td {
+    color: #222222;
+    font-size: 7.5pt;
+    line-height: 1.35;
+  }
+
+  .print-table td:first-child {
+    width: 25%;
+  }
+
+  .print-table td strong {
+    display: block;
+    color: #111111;
+    font-size: 7.8pt;
+  }
+
+  .print-role {
+    display: block;
+    margin-top: 1mm;
+    color: #666666;
+    font-size: 6.5pt;
+    line-height: 1.35;
+  }
+
+  .print-timetable td:first-child {
+    width: 11%;
+  }
+
+  .print-timetable td:nth-child(2) {
+    width: 23%;
+  }
+
+  .print-timetable th,
+  .print-timetable td {
+    font-size: 7pt;
+  }
+
+  .print-notice {
+    margin-top: 2.5mm;
+    padding: 2.5mm 3mm;
+    border: 0.25mm solid #c8cdd1;
+    background: #f6f7f8;
+    color: #555555;
+    font-size: 7.5pt;
+    line-height: 1.45;
+  }
+
+  .print-notice strong {
+    color: #111111;
+  }
+
+  .print-volunteer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm;
+  }
+
+  .print-volunteer-grid > div {
+    padding: 3mm;
+    border: 0.25mm solid #c2c8cd;
+    background: #f6f7f8;
+  }
+
+  .print-volunteer-grid strong {
+    color: #123b6d;
+    font-size: 8pt;
+  }
+
+  .print-volunteer-grid p {
+    margin: 1.5mm 0 0;
+    color: #444444;
+    font-size: 7.5pt;
+    line-height: 1.45;
+  }
+
+  .print-procedure {
+    margin-top: 3mm;
+    padding: 3mm;
+    border: 0.25mm solid #c2c8cd;
+  }
+
+  .print-procedure strong {
+    display: block;
+    color: #111111;
+    font-size: 8pt;
+  }
+
+  .print-procedure p {
+    margin: 1.5mm 0 0;
+    color: #444444;
+    font-size: 7.5pt;
+    line-height: 1.45;
+  }
+
+  .print-guidance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm;
+  }
+
+  .print-guidance-grid article {
+    padding: 3mm;
+    border-top: 1mm solid #123b6d;
+    background: #f6f7f8;
+  }
+
+  .print-guidance-grid strong {
+    display: block;
+    color: #123b6d;
+    font-size: 8pt;
+  }
+
+  .print-guidance-grid p {
+    margin: 1.5mm 0 0;
+    color: #444444;
+    font-size: 7.5pt;
+    line-height: 1.5;
+  }
+
+  .print-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10mm;
+    margin-top: 8mm;
+    padding-top: 3mm;
+    border-top: 0.25mm solid #bfc5ca;
+    color: #666666;
+    font-size: 6.5pt;
+  }
+}
+
 @media (max-width: 900px) {
   .duties-hero {
     padding: 70px 0 58px;
+  }
+
+  .duties-hero-top {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .duties-section-tabs {
@@ -534,6 +859,10 @@
 
   .duties-hero p {
     font-size: 16px;
+  }
+
+  .print-schedule-button {
+    width: 100%;
   }
 
   .duties-nav-section {
