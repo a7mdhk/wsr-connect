@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { NavLink, Route, Routes } from "react-router";
+import { NavLink, Route, Routes, useNavigate } from "react-router";
 import { srcMembers } from "./data/srcMembers";
 import DutiesPage from "./DutiesPage";
+import { AuthProvider, useAuth } from "./auth/AuthContext";
+import LoginPage from "./auth/LoginPage";
+import ProtectedRoute from "./auth/ProtectedRoute";
 import "./App.css";
 
 const announcements = [
@@ -124,10 +127,10 @@ function Header() {
         <div className="nav-actions">
           <NavLink
             className="portal-button"
-            to="/portal"
+            to="/login"
             onClick={closeMenu}
           >
-            School Portal →
+            SRC Login
           </NavLink>
 
           <button
@@ -158,14 +161,20 @@ function Header() {
               end={item.to === "/"}
               onClick={closeMenu}
               className={({ isActive }) =>
-                isActive
-                  ? "mobile-nav-link active"
-                  : "mobile-nav-link"
+                isActive ? "mobile-nav-link active" : "mobile-nav-link"
               }
             >
               {item.label}
             </NavLink>
           ))}
+
+          <NavLink
+            to="/login"
+            onClick={closeMenu}
+            className="mobile-nav-link"
+          >
+            SRC Login
+          </NavLink>
         </nav>
       ) : null}
     </header>
@@ -773,6 +782,22 @@ function FeedbackPage() {
 }
 
 function PortalPage() {
+  const { signOutUser } = useAuth();
+  const navigate = useNavigate();
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setSigningOut(true);
+
+    try {
+      await signOutUser();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Firebase sign-out error:", error);
+      setSigningOut(false);
+    }
+  }
+
   return (
     <section className="portal-page">
       <div className="portal-card">
@@ -781,20 +806,43 @@ function PortalPage() {
         <h1>WSR Connect Portal</h1>
 
         <p>
-          The private student, teacher and leadership portal will live here.
-          Authentication and permissions will be added later.
+          You are signed in. This private portal will contain approved
+          student, teacher and leadership tools.
         </p>
 
         <div className="portal-status">
-          <strong>Coming next</strong>
+          <strong>Authentication active</strong>
           <span>
-            School-approved authentication and role-based access.
+            SRC-specific authorization and private portal features will be
+            added next.
           </span>
         </div>
 
-        <NavLink className="secondary-button" to="/">
-          ← Back to public site
-        </NavLink>
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            flexWrap: "wrap",
+            marginTop: "24px",
+          }}
+        >
+          <NavLink className="secondary-button" to="/">
+            ← Back to public site
+          </NavLink>
+
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={handleSignOut}
+            disabled={signingOut}
+            style={{
+              cursor: signingOut ? "wait" : "pointer",
+              opacity: signingOut ? 0.7 : 1,
+            }}
+          >
+            {signingOut ? "Signing out..." : "Sign out"}
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -844,7 +892,16 @@ function Layout() {
 
           <Route path="/feedback" element={<FeedbackPage />} />
 
-          <Route path="/portal" element={<PortalPage />} />
+          <Route
+            path="/portal"
+            element={
+              <ProtectedRoute>
+                <PortalPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/login" element={<LoginPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
@@ -856,5 +913,9 @@ function Layout() {
 }
 
 export default function App() {
-  return <Layout />;
+  return (
+    <AuthProvider>
+      <Layout />
+    </AuthProvider>
+  );
 }
