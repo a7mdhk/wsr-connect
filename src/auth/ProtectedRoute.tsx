@@ -4,12 +4,19 @@ import { useAuth } from "./AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  requiredAccess?: "src" | "leadership";
 }
 
 export default function ProtectedRoute({
   children,
+  requiredAccess = "leadership",
 }: ProtectedRouteProps) {
-  const { user, isSRC, loading } = useAuth();
+  const {
+    user,
+    isSRC,
+    isLeadership,
+    loading,
+  } = useAuth();
 
   if (loading) {
     return (
@@ -29,11 +36,26 @@ export default function ProtectedRoute({
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
 
-  if (!isSRC) {
-    return <Navigate to="/" replace />;
+  const hasAccess =
+    requiredAccess === "src"
+      ? isSRC
+      : isLeadership;
+
+  if (!hasAccess) {
+    return (
+      <Navigate
+        to="/"
+        replace
+      />
+    );
   }
 
   return <>{children}</>;

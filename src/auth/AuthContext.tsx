@@ -15,12 +15,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { auth, db } from "../lib/firebase";
+import { auth, authPersistence, db } from "../lib/firebase";
 
 interface AuthContextValue {
   user: User | null;
   role: string | null;
+  position: string | null;
+  accessLevel: string | null;
   isSRC: boolean;
+  isLeadership: boolean;
   loading: boolean;
   signIn: (
     email: string,
@@ -45,6 +48,12 @@ export function AuthProvider({
   const [role, setRole] =
     useState<string | null>(null);
 
+  const [position, setPosition] =
+    useState<string | null>(null);
+
+  const [accessLevel, setAccessLevel] =
+    useState<string | null>(null);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -53,8 +62,11 @@ export function AuthProvider({
       onAuthStateChanged(
         auth,
         async (currentUser) => {
+          setLoading(true);
           setUser(currentUser);
           setRole(null);
+          setPosition(null);
+          setAccessLevel(null);
 
           if (!currentUser) {
             setLoading(false);
@@ -67,11 +79,24 @@ export function AuthProvider({
             );
 
             if (userDocument.exists()) {
-              const userData = userDocument.data();
+              const userData =
+                userDocument.data();
 
               setRole(
                 typeof userData.role === "string"
                   ? userData.role
+                  : null,
+              );
+
+              setPosition(
+                typeof userData.position === "string"
+                  ? userData.position
+                  : null,
+              );
+
+              setAccessLevel(
+                typeof userData.accessLevel === "string"
+                  ? userData.accessLevel
                   : null,
               );
             }
@@ -82,6 +107,8 @@ export function AuthProvider({
             );
 
             setRole(null);
+            setPosition(null);
+            setAccessLevel(null);
           } finally {
             setLoading(false);
           }
@@ -91,30 +118,38 @@ export function AuthProvider({
     return unsubscribe;
   }, []);
 
-  const signIn = async (
-    email: string,
-    password: string,
-  ) => {
-    await signInWithEmailAndPassword(
-      auth,
-      email.trim(),
-      password,
-    );
-  };
+  const signIn = async (email: string, password: string) => {
+  await authPersistence;
+
+  await signInWithEmailAndPassword(
+    auth,
+    email.trim(),
+    password,
+  );
+};
 
   const signOutUser = async () => {
     await signOut(auth);
+
     setRole(null);
+    setPosition(null);
+    setAccessLevel(null);
   };
 
   const isSRC = role === "src";
+
+  const isLeadership =
+    accessLevel === "leadership";
 
   return (
     <AuthContext.Provider
       value={{
         user,
         role,
+        position,
+        accessLevel,
         isSRC,
+        isLeadership,
         loading,
         signIn,
         signOutUser,

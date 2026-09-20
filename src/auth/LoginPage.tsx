@@ -1,16 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "./AuthContext";
 
 export default function LoginPage() {
-  const { signIn } = useAuth();
+  const {
+    signIn,
+    user,
+    isLeadership,
+    loading,
+  } = useAuth();
+
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      if (isLeadership) {
+        navigate("/portal", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [
+    loading,
+    user,
+    isLeadership,
+    navigate,
+  ]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -20,16 +41,15 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
-      navigate("/portal", { replace: true });
     } catch (error) {
       console.error("Firebase sign-in error:", error);
 
       setError(
         error instanceof Error
           ? error.message
-          : "Sign-in failed."
+          : "Sign-in failed.",
       );
-    } finally {
+
       setLoggingIn(false);
     }
   }
@@ -72,7 +92,7 @@ export default function LoginPage() {
             fontSize: "28px",
           }}
         >
-          SRC Login
+          Leadership Login
         </h1>
 
         <p
@@ -82,7 +102,7 @@ export default function LoginPage() {
             lineHeight: 1.6,
           }}
         >
-          Sign in to access SRC-only areas.
+          Sign in to access the SRC leadership portal.
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -103,7 +123,9 @@ export default function LoginPage() {
             id="email"
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) =>
+              setEmail(event.target.value)
+            }
             required
             autoComplete="email"
             style={{
@@ -133,7 +155,9 @@ export default function LoginPage() {
             id="password"
             type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) =>
+              setPassword(event.target.value)
+            }
             required
             autoComplete="current-password"
             style={{
@@ -175,7 +199,9 @@ export default function LoginPage() {
               opacity: loggingIn ? 0.7 : 1,
             }}
           >
-            {loggingIn ? "Signing in..." : "Sign in"}
+            {loggingIn
+              ? "Signing in..."
+              : "Sign in"}
           </button>
         </form>
       </section>

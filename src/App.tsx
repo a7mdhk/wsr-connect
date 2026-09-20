@@ -1,8 +1,9 @@
+import PortalPage from "./portal/PortalPage";
 import { useState } from "react";
-import { NavLink, Route, Routes, useNavigate } from "react-router";
+import { NavLink, Route, Routes, useLocation } from "react-router";
 import { srcMembers } from "./data/srcMembers";
 import DutiesPage from "./DutiesPage";
-import { AuthProvider, useAuth } from "./auth/AuthContext";
+import { AuthProvider } from "./auth/AuthContext";
 import LoginPage from "./auth/LoginPage";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import "./App.css";
@@ -139,11 +140,15 @@ function Header() {
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             aria-label={
-              menuOpen ? "Close navigation menu" : "Open navigation menu"
+              menuOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
             }
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <span aria-hidden="true">{menuOpen ? "×" : "☰"}</span>
+            <span aria-hidden="true">
+              {menuOpen ? "×" : "☰"}
+            </span>
           </button>
         </div>
       </div>
@@ -161,7 +166,9 @@ function Header() {
               end={item.to === "/"}
               onClick={closeMenu}
               className={({ isActive }) =>
-                isActive ? "mobile-nav-link active" : "mobile-nav-link"
+                isActive
+                  ? "mobile-nav-link active"
+                  : "mobile-nav-link"
               }
             >
               {item.label}
@@ -182,6 +189,11 @@ function Header() {
 }
 
 function Footer() {
+  const location = useLocation();
+  const isPortalRoute =
+    location.pathname === "/portal" ||
+    location.pathname.startsWith("/portal/");
+
   return (
     <footer className="footer">
       <div>
@@ -192,9 +204,11 @@ function Footer() {
       <div className="footer-right">
         <span>School community platform</span>
 
-        <NavLink className="portal-button" to="/portal">
-          School Portal →
-        </NavLink>
+        {!isPortalRoute && (
+          <NavLink className="portal-button" to="/portal">
+            School Portal →
+          </NavLink>
+        )}
       </div>
     </footer>
   );
@@ -336,7 +350,10 @@ function HomePage() {
             ))}
           </div>
 
-          <NavLink className="primary-button small-button" to="/src">
+          <NavLink
+            className="primary-button small-button"
+            to="/src"
+          >
             Explore SRC
           </NavLink>
         </div>
@@ -616,7 +633,8 @@ function SRCPage() {
                 key={`${first.position}-${second.position}`}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                  gridTemplateColumns:
+                    "repeat(2, minmax(0, 1fr))",
                   gap: "14px",
                 }}
               >
@@ -762,7 +780,10 @@ function FeedbackPage() {
           </p>
 
           <div className="feedback-status">
-            <div className="feedback-status-marker" aria-hidden="true">
+            <div
+              className="feedback-status-marker"
+              aria-hidden="true"
+            >
               i
             </div>
 
@@ -778,73 +799,6 @@ function FeedbackPage() {
         </div>
       </section>
     </>
-  );
-}
-
-function PortalPage() {
-  const { signOutUser } = useAuth();
-  const navigate = useNavigate();
-  const [signingOut, setSigningOut] = useState(false);
-
-  async function handleSignOut() {
-    setSigningOut(true);
-
-    try {
-      await signOutUser();
-      navigate("/login", { replace: true });
-    } catch (error) {
-      console.error("Firebase sign-out error:", error);
-      setSigningOut(false);
-    }
-  }
-
-  return (
-    <section className="portal-page">
-      <div className="portal-card">
-        <span className="eyebrow">SCHOOL PORTAL</span>
-
-        <h1>WSR Connect Portal</h1>
-
-        <p>
-          You are signed in. This private portal will contain approved
-          student, teacher and leadership tools.
-        </p>
-
-        <div className="portal-status">
-          <strong>Authentication active</strong>
-          <span>
-            SRC-specific authorization and private portal features will be
-            added next.
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            flexWrap: "wrap",
-            marginTop: "24px",
-          }}
-        >
-          <NavLink className="secondary-button" to="/">
-            ← Back to public site
-          </NavLink>
-
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={handleSignOut}
-            disabled={signingOut}
-            style={{
-              cursor: signingOut ? "wait" : "pointer",
-              opacity: signingOut ? 0.7 : 1,
-            }}
-          >
-            {signingOut ? "Signing out..." : "Sign out"}
-          </button>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -868,7 +822,34 @@ function NotFoundPage() {
   );
 }
 
+function PortalNotFoundPage() {
+  return (
+    <section className="portal-page">
+      <div className="portal-card">
+        <span className="eyebrow">404 · LEADERSHIP PORTAL</span>
+
+        <h1>Portal page not found.</h1>
+
+        <p>
+          This leadership portal page doesn't exist yet or the address is
+          incorrect.
+        </p>
+
+        <NavLink className="primary-button" to="/portal">
+          Back to Portal
+        </NavLink>
+      </div>
+    </section>
+  );
+}
+
 function Layout() {
+  const location = useLocation();
+
+  const isPortalRoute =
+    location.pathname === "/portal" ||
+    location.pathname.startsWith("/portal/");
+
   return (
     <div className="app">
       <Header />
@@ -886,7 +867,14 @@ function Layout() {
 
           <Route path="/src" element={<SRCPage />} />
 
-          <Route path="/duties" element={<DutiesPage />} />
+          <Route
+            path="/duties"
+            element={
+              <ProtectedRoute requiredAccess="src">
+                <DutiesPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/resources" element={<ResourcesPage />} />
 
@@ -895,15 +883,35 @@ function Layout() {
           <Route
             path="/portal"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredAccess="leadership">
                 <PortalPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/portal/*"
+            element={
+              <ProtectedRoute requiredAccess="leadership">
+                <PortalNotFoundPage />
               </ProtectedRoute>
             }
           />
 
           <Route path="/login" element={<LoginPage />} />
 
-          <Route path="*" element={<NotFoundPage />} />
+          <Route
+            path="*"
+            element={
+              isPortalRoute ? (
+                <ProtectedRoute requiredAccess="leadership">
+                  <PortalNotFoundPage />
+                </ProtectedRoute>
+              ) : (
+                <NotFoundPage />
+              )
+            }
+          />
         </Routes>
       </main>
 
