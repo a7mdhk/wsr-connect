@@ -1292,6 +1292,7 @@ textarea:focus-visible {
     justify-content: space-between;
   }
 }
+
 /* CALENDAR */
 
 .calendar-page {
@@ -1868,9 +1869,7 @@ textarea:focus-visible {
 .calendar-time-column {
   position: relative;
   min-width: 0;
-  height: calc(
-    (22 - 7) * 64px
-  );
+  height: calc((22 - 7) * 64px);
   border-right: 1px solid #e7e9eb;
   background:
     linear-gradient(
@@ -2344,7 +2343,7 @@ textarea:focus-visible {
   margin-top: 5px;
 }
 
-/* RESPONSIVE */
+/* CALENDAR RESPONSIVE */
 
 @media (max-width: 900px) {
   .calendar-header {
