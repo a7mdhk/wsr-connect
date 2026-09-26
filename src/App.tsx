@@ -1,4 +1,7 @@
+import DutyTrackerPage from "./portal/DutyTrackerPage";
 import PortalPage from "./portal/PortalPage";
+import CalendarPage from "./portal/CalendarPage";
+import FeedbackInboxPage from "./portal/FeedbackInboxPage";
 import { useState } from "react";
 import { NavLink, Route, Routes, useLocation } from "react-router";
 import { srcMembers } from "./data/srcMembers";
@@ -75,6 +78,24 @@ const seniorLeadershipOrder = [
   "Deputy Head Boy",
   "Deputy Head Girl",
 ];
+
+const feedbackAllowedMimeTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+  "text/plain",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+];
+
+const feedbackMaxFileSize = 50 * 1024 * 1024;
+const feedbackMaxFiles = 10;
 
 function getSeniorMember(position: string) {
   return srcMembers.find((member) => member.position === position);
@@ -190,6 +211,7 @@ function Header() {
 
 function Footer() {
   const location = useLocation();
+
   const isPortalRoute =
     location.pathname === "/portal" ||
     location.pathname.startsWith("/portal/");
@@ -248,16 +270,23 @@ function HomePage() {
             </h1>
 
             <p>
-              WSR Connect brings together school updates, student leadership,
-              events, resources and community initiatives in one place.
+              WSR Connect brings together school updates, student
+              leadership, events, resources and community initiatives in one
+              place.
             </p>
 
             <div className="hero-actions">
-              <NavLink className="primary-button" to="/announcements">
+              <NavLink
+                className="primary-button"
+                to="/announcements"
+              >
                 Explore WSR Connect
               </NavLink>
 
-              <NavLink className="secondary-button" to="/src">
+              <NavLink
+                className="secondary-button"
+                to="/src"
+              >
                 Student Leadership
               </NavLink>
             </div>
@@ -274,7 +303,10 @@ function HomePage() {
             </div>
 
             {events.slice(0, 2).map((event) => (
-              <div className="mini-event" key={event.title}>
+              <div
+                className="mini-event"
+                key={event.title}
+              >
                 <div className="mini-date">
                   <strong>{event.date}</strong>
                   <span>{event.month}</span>
@@ -302,7 +334,10 @@ function HomePage() {
             <h2>Latest announcements</h2>
           </div>
 
-          <NavLink to="/announcements" className="text-link">
+          <NavLink
+            to="/announcements"
+            className="text-link"
+          >
             View all →
           </NavLink>
         </div>
@@ -322,7 +357,10 @@ function HomePage() {
 
               <p>{announcement.text}</p>
 
-              <NavLink to="/announcements" className="card-link">
+              <NavLink
+                to="/announcements"
+                className="card-link"
+              >
                 Read more →
               </NavLink>
             </article>
@@ -343,7 +381,10 @@ function HomePage() {
 
           <div className="priority-list">
             {priorities.map((priority, index) => (
-              <div className="priority-item" key={priority}>
+              <div
+                className="priority-item"
+                key={priority}
+              >
                 <span>0{index + 1}</span>
                 <strong>{priority}</strong>
               </div>
@@ -360,7 +401,9 @@ function HomePage() {
 
         <div className="info-panel">
           <div className="info-panel-header">
-            <span className="eyebrow">WHY WSR CONNECT?</span>
+            <span className="eyebrow">
+              WHY WSR CONNECT?
+            </span>
             <span className="info-number">01</span>
           </div>
 
@@ -403,14 +446,20 @@ function HomePage() {
             <h2>Upcoming events</h2>
           </div>
 
-          <NavLink to="/events" className="text-link">
+          <NavLink
+            to="/events"
+            className="text-link"
+          >
             Calendar →
           </NavLink>
         </div>
 
         <div className="events-list">
           {events.map((event) => (
-            <article className="event-row" key={event.title}>
+            <article
+              className="event-row"
+              key={event.title}
+            >
               <div className="event-date">
                 <strong>{event.date}</strong>
                 <span>{event.month}</span>
@@ -421,7 +470,10 @@ function HomePage() {
                 <h3>{event.title}</h3>
               </div>
 
-              <NavLink to="/events" className="event-arrow">
+              <NavLink
+                to="/events"
+                className="event-arrow"
+              >
                 →
               </NavLink>
             </article>
@@ -442,25 +494,37 @@ function HomePage() {
         </div>
 
         <div className="resource-grid">
-          <NavLink to="/resources" className="resource-card">
+          <NavLink
+            to="/resources"
+            className="resource-card"
+          >
             <span>01</span>
             <strong>School Resources</strong>
             <small>Documents and useful links</small>
           </NavLink>
 
-          <NavLink to="/src" className="resource-card">
+          <NavLink
+            to="/src"
+            className="resource-card"
+          >
             <span>02</span>
             <strong>Student Leadership</strong>
             <small>SRC information and initiatives</small>
           </NavLink>
 
-          <NavLink to="/duties" className="resource-card">
+          <NavLink
+            to="/duties"
+            className="resource-card"
+          >
             <span>03</span>
             <strong>Duties & Timetables</strong>
             <small>SRC duty locations and schedules</small>
           </NavLink>
 
-          <NavLink to="/feedback" className="resource-card">
+          <NavLink
+            to="/feedback"
+            className="resource-card"
+          >
             <span>04</span>
             <strong>Feedback</strong>
             <small>Share an idea or suggestion</small>
@@ -496,7 +560,9 @@ function AnnouncementsPage() {
 
               <p>{announcement.text}</p>
 
-              <span className="card-link">Announcement</span>
+              <span className="card-link">
+                Announcement
+              </span>
             </article>
           ))}
         </div>
@@ -550,9 +616,13 @@ function MemberCard({
   return (
     <article className="src-member-card">
       <div className="src-member-top">
-        <span className="src-member-role">{position}</span>
+        <span className="src-member-role">
+          {position}
+        </span>
 
-        <span className="src-member-grade">{grade}</span>
+        <span className="src-member-grade">
+          {grade}
+        </span>
       </div>
 
       <h3>{name}</h3>
@@ -584,7 +654,9 @@ function SRCPage() {
         <div className="src-intro-card">
           <div>
             <span className="eyebrow">WSR SRC</span>
-            <h2>Meet the student leadership team.</h2>
+            <h2>
+              Meet the student leadership team.
+            </h2>
           </div>
 
           <div className="src-intro-stats">
@@ -594,7 +666,9 @@ function SRCPage() {
             </div>
 
             <div>
-              <strong>{srcCategories.length + 1}</strong>
+              <strong>
+                {srcCategories.length + 1}
+              </strong>
               <span>Leadership areas</span>
             </div>
           </div>
@@ -604,7 +678,9 @@ function SRCPage() {
       <section className="section src-section">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">HIGHEST LEADERSHIP</span>
+            <span className="eyebrow">
+              HIGHEST LEADERSHIP
+            </span>
             <h2>Senior Leadership</h2>
           </div>
 
@@ -621,8 +697,10 @@ function SRCPage() {
           }}
         >
           {[0, 1, 2].map((pairIndex) => {
-            const first = seniorLeadership[pairIndex * 2];
-            const second = seniorLeadership[pairIndex * 2 + 1];
+            const first =
+              seniorLeadership[pairIndex * 2];
+            const second =
+              seniorLeadership[pairIndex * 2 + 1];
 
             if (!first || !second) {
               return null;
@@ -665,7 +743,10 @@ function SRCPage() {
         }
 
         return (
-          <section className="section src-section" key={category}>
+          <section
+            className="section src-section"
+            key={category}
+          >
             <div className="section-heading">
               <div>
                 <span className="eyebrow">SRC</span>
@@ -674,7 +755,9 @@ function SRCPage() {
 
               <span className="src-count">
                 {members.length}{" "}
-                {members.length === 1 ? "member" : "members"}
+                {members.length === 1
+                  ? "member"
+                  : "members"}
               </span>
             </div>
 
@@ -696,7 +779,9 @@ function SRCPage() {
         <div className="src-contact-note">
           <span className="eyebrow">CONTACT</span>
 
-          <h2>Need to reach student leadership?</h2>
+          <h2>
+            Need to reach student leadership?
+          </h2>
 
           <p>
             Public contact details are intentionally not displayed here.
@@ -704,7 +789,10 @@ function SRCPage() {
             once authentication and permissions are implemented.
           </p>
 
-          <NavLink className="secondary-button" to="/feedback">
+          <NavLink
+            className="secondary-button"
+            to="/feedback"
+          >
             Send Feedback
           </NavLink>
         </div>
@@ -718,17 +806,20 @@ function ResourcesPage() {
     {
       number: "01",
       title: "School Resources",
-      description: "Useful documents and school-approved links.",
+      description:
+        "Useful documents and school-approved links.",
     },
     {
       number: "02",
       title: "Student Leadership",
-      description: "Information relating to student leadership and SRC work.",
+      description:
+        "Information relating to student leadership and SRC work.",
     },
     {
       number: "03",
       title: "School Information",
-      description: "Public-facing information for the WSR community.",
+      description:
+        "Public-facing information for the WSR community.",
     },
   ];
 
@@ -759,43 +850,589 @@ function ResourcesPage() {
 }
 
 function FeedbackPage() {
+  const [fullName, setFullName] = useState("");
+  const [gradeSection, setGradeSection] = useState("");
+  const [email, setEmail] = useState("");
+  const [category, setCategory] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [requestResponse, setRequestResponse] =
+    useState(false);
+  const [
+    requestStaffInvolvement,
+    setRequestStaffInvolvement,
+  ] = useState(false);
+
+  const [attachments, setAttachments] =
+    useState<File[]>([]);
+
+  const [submitting, setSubmitting] =
+    useState(false);
+  const [submitted, setSubmitted] =
+    useState(false);
+  const [errorMessage, setErrorMessage] =
+    useState("");
+
+  const handleFileSelection = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setErrorMessage("");
+
+    const selectedFiles = Array.from(
+      event.target.files ?? [],
+    );
+
+    if (selectedFiles.length === 0) {
+      return;
+    }
+
+    const combinedFiles = [
+      ...attachments,
+      ...selectedFiles,
+    ];
+
+    if (
+      combinedFiles.length > feedbackMaxFiles
+    ) {
+      setErrorMessage(
+        `You can attach up to ${feedbackMaxFiles} files.`,
+      );
+
+      event.target.value = "";
+      return;
+    }
+
+    for (const file of selectedFiles) {
+      if (file.size > feedbackMaxFileSize) {
+        setErrorMessage(
+          `"${file.name}" is larger than the 50 MB limit.`,
+        );
+
+        event.target.value = "";
+        return;
+      }
+
+      if (
+        file.type &&
+        !feedbackAllowedMimeTypes.includes(file.type)
+      ) {
+        setErrorMessage(
+          `"${file.name}" has an unsupported file type.`,
+        );
+
+        event.target.value = "";
+        return;
+      }
+    }
+
+    setAttachments(combinedFiles);
+
+    event.target.value = "";
+  };
+
+  const removeAttachment = (
+    indexToRemove: number,
+  ) => {
+    setAttachments((currentFiles) =>
+      currentFiles.filter(
+        (_, index) => index !== indexToRemove,
+      ),
+    );
+
+    setErrorMessage("");
+  };
+
+  const formatFileSize = (size: number) => {
+    if (size < 1024) {
+      return `${size} B`;
+    }
+
+    if (size < 1024 * 1024) {
+      return `${(size / 1024).toFixed(1)} KB`;
+    }
+
+    return `${(
+      size /
+      (1024 * 1024)
+    ).toFixed(1)} MB`;
+  };
+
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+
+    setSubmitting(true);
+    setSubmitted(false);
+    setErrorMessage("");
+
+    try {
+      if (
+        attachments.length > feedbackMaxFiles
+      ) {
+        throw new Error(
+          `You can attach up to ${feedbackMaxFiles} files.`,
+        );
+      }
+
+      for (const file of attachments) {
+        if (file.size > feedbackMaxFileSize) {
+          throw new Error(
+            `"${file.name}" is larger than the 50 MB limit.`,
+          );
+        }
+
+        if (
+          file.type &&
+          !feedbackAllowedMimeTypes.includes(file.type)
+        ) {
+          throw new Error(
+            `"${file.name}" has an unsupported file type.`,
+          );
+        }
+      }
+
+      const formData = new FormData();
+
+      formData.append("full_name", fullName);
+      formData.append(
+        "grade_section",
+        gradeSection,
+      );
+      formData.append("email", email || "");
+      formData.append("category", category);
+      formData.append("subject", subject);
+      formData.append("message", message);
+
+      formData.append(
+        "request_response",
+        String(requestResponse),
+      );
+
+      formData.append(
+        "request_staff_involvement",
+        String(requestStaffInvolvement),
+      );
+
+      for (const file of attachments) {
+        formData.append(
+          "attachments",
+          file,
+          file.name,
+        );
+      }
+
+      const response = await fetch(
+        "https://kulmkrqoadsoaocuovpe.supabase.co/functions/v1/submit-feedback",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          typeof result.error === "string"
+            ? result.error
+            : "Something went wrong while submitting your feedback.",
+        );
+      }
+
+      setSubmitted(true);
+      setFullName("");
+      setGradeSection("");
+      setEmail("");
+      setCategory("");
+      setSubject("");
+      setMessage("");
+      setRequestResponse(false);
+      setRequestStaffInvolvement(false);
+      setAttachments([]);
+    } catch (error) {
+      console.error(
+        "Feedback submission failed:",
+        error,
+      );
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while submitting your feedback.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <PageHero
         eyebrow="YOUR VOICE MATTERS"
         title="Feedback"
-        description="Have an idea, suggestion or concern about the student community? This is the starting point for sharing it."
+        description="Share an idea, concern, report or suggestion with student leadership."
       />
 
       <section className="section">
         <div className="feedback-panel">
-          <span className="eyebrow">PUBLIC FEEDBACK</span>
+          <span className="eyebrow">
+            PUBLIC FEEDBACK
+          </span>
 
           <h2>Tell us what could be better.</h2>
 
           <p>
-            The public feedback system is not connected yet. We are keeping
-            submissions disabled until an approved school feedback channel is
-            in place.
+            Your feedback will be submitted to the WSR Connect feedback
+            system for review by the authorised student leadership team.
           </p>
 
-          <div className="feedback-status">
-            <div
-              className="feedback-status-marker"
-              aria-hidden="true"
+          {submitted ? (
+            <div className="feedback-status">
+              <div
+                className="feedback-status-marker"
+                aria-hidden="true"
+              >
+                ✓
+              </div>
+
+              <div>
+                <strong>
+                  Feedback submitted successfully.
+                </strong>
+
+                <p>
+                  Thank you. Your submission has been received and can now
+                  be reviewed by the authorised leadership team.
+                </p>
+
+                <button
+                  className="secondary-button"
+                  type="button"
+                  onClick={() =>
+                    setSubmitted(false)
+                  }
+                >
+                  Submit another response
+                </button>
+              </div>
+            </div>
+          ) : (
+            <form
+              className="feedback-form"
+              onSubmit={handleSubmit}
             >
-              i
-            </div>
+              <div className="feedback-form-grid">
+                <label>
+                  <span>Full Name *</span>
 
-            <div>
-              <strong>Feedback submissions are coming soon.</strong>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(event) =>
+                      setFullName(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Your full name"
+                    maxLength={120}
+                    required
+                  />
+                </label>
 
-              <p>
-                Nothing entered on this page is currently collected or sent
-                anywhere.
-              </p>
-            </div>
-          </div>
+                <label>
+                  <span>Grade & Section *</span>
+
+                  <input
+                    type="text"
+                    value={gradeSection}
+                    onChange={(event) =>
+                      setGradeSection(
+                        event.target.value,
+                      )
+                    }
+                    placeholder="e.g. Year 12A"
+                    maxLength={80}
+                    required
+                  />
+                </label>
+              </div>
+
+              <label>
+                <span>Email Address</span>
+
+                <small>
+                  Optional. Provide this if you would like a response.
+                </small>
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(event) =>
+                    setEmail(event.target.value)
+                  }
+                  placeholder="your.email@example.com"
+                  maxLength={254}
+                />
+              </label>
+
+              <label>
+                <span>What is this about? *</span>
+
+                <select
+                  value={category}
+                  onChange={(event) =>
+                    setCategory(
+                      event.target.value,
+                    )
+                  }
+                  required
+                >
+                  <option
+                    value=""
+                    disabled
+                  >
+                    Select a category
+                  </option>
+
+                  <option value="suggestion">
+                    Suggestion / Idea
+                  </option>
+
+                  <option value="concern">
+                    Concern
+                  </option>
+
+                  <option value="event">
+                    Event
+                  </option>
+
+                  <option value="facilities">
+                    Facilities
+                  </option>
+
+                  <option value="src">
+                    SRC / Student Leadership
+                  </option>
+
+                  <option value="website">
+                    WSR Connect / Website
+                  </option>
+
+                  <option value="report">
+                    Report an Incident
+                  </option>
+
+                  <option value="other">
+                    Other
+                  </option>
+                </select>
+              </label>
+
+              <label>
+                <span>Subject *</span>
+
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(event) =>
+                    setSubject(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Briefly describe what your feedback is about"
+                  maxLength={200}
+                  required
+                />
+              </label>
+
+              <label>
+                <span>Feedback *</span>
+
+                <textarea
+                  value={message}
+                  onChange={(event) =>
+                    setMessage(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Explain your feedback, concern or report..."
+                  maxLength={5000}
+                  rows={7}
+                  required
+                />
+              </label>
+
+              <div className="feedback-attachments">
+                <div>
+                  <span className="feedback-field-label">
+                    Attachments
+                  </span>
+
+                  <small>
+                    Optional. You can attach up to 10 files, with a
+                    maximum of 50 MB per file.
+                  </small>
+                </div>
+
+                <label className="feedback-file-input">
+                  <span>Select files</span>
+
+                  <input
+                    type="file"
+                    multiple
+                    accept={[
+                      ".jpg",
+                      ".jpeg",
+                      ".png",
+                      ".webp",
+                      ".gif",
+                      ".pdf",
+                      ".txt",
+                      ".doc",
+                      ".docx",
+                      ".xls",
+                      ".xlsx",
+                      ".ppt",
+                      ".pptx",
+                    ].join(",")}
+                    onChange={
+                      handleFileSelection
+                    }
+                    disabled={
+                      submitting ||
+                      attachments.length >=
+                        feedbackMaxFiles
+                    }
+                  />
+                </label>
+
+                {attachments.length > 0 ? (
+                  <div className="feedback-file-list">
+                    {attachments.map(
+                      (file, index) => (
+                        <div
+                          className="feedback-file-item"
+                          key={`${file.name}-${file.size}-${index}`}
+                        >
+                          <div>
+                            <strong>
+                              {file.name}
+                            </strong>
+
+                            <small>
+                              {formatFileSize(
+                                file.size,
+                              )}
+                            </small>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="feedback-file-remove"
+                            onClick={() =>
+                              removeAttachment(
+                                index,
+                              )
+                            }
+                            disabled={submitting}
+                            aria-label={`Remove ${file.name}`}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="feedback-options">
+                <label className="feedback-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={requestResponse}
+                    onChange={(event) =>
+                      setRequestResponse(
+                        event.target.checked,
+                      )
+                    }
+                  />
+
+                  <span>
+                    <strong>
+                      I would like a response.
+                    </strong>
+
+                    <small>
+                      If selected, please provide an email address above.
+                    </small>
+                  </span>
+                </label>
+
+                <label className="feedback-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={
+                      requestStaffInvolvement
+                    }
+                    onChange={(event) =>
+                      setRequestStaffInvolvement(
+                        event.target.checked,
+                      )
+                    }
+                  />
+
+                  <span>
+                    <strong>
+                      I would like a staff member to be involved.
+                    </strong>
+
+                    <small>
+                      Select this if you would like your concern to be
+                      referred for staff involvement.
+                    </small>
+                  </span>
+                </label>
+              </div>
+
+              <div className="feedback-privacy">
+                <strong>Before you submit</strong>
+
+                <p>
+                  Please avoid sharing passwords, account credentials or
+                  other highly sensitive information. This feedback system
+                  is intended for school-community suggestions, concerns,
+                  reports and requests. Submissions are accessible only to
+                  authorised members of the WSR Connect leadership system.
+                </p>
+
+                <p>
+                  This notice is temporary and does not represent a
+                  school-approved privacy policy.
+                </p>
+              </div>
+
+              {errorMessage ? (
+                <div
+                  className="feedback-error"
+                  role="alert"
+                >
+                  {errorMessage}
+                </div>
+              ) : null}
+
+              <button
+                className="primary-button"
+                type="submit"
+                disabled={submitting}
+              >
+                {submitting
+                  ? "Submitting..."
+                  : "Submit Feedback"}
+              </button>
+            </form>
+          )}
         </div>
       </section>
     </>
@@ -814,7 +1451,10 @@ function NotFoundPage() {
           The page you're looking for doesn't exist in WSR Connect.
         </p>
 
-        <NavLink className="primary-button" to="/">
+        <NavLink
+          className="primary-button"
+          to="/"
+        >
           Return home
         </NavLink>
       </div>
@@ -826,7 +1466,9 @@ function PortalNotFoundPage() {
   return (
     <section className="portal-page">
       <div className="portal-card">
-        <span className="eyebrow">404 · LEADERSHIP PORTAL</span>
+        <span className="eyebrow">
+          404 · LEADERSHIP PORTAL
+        </span>
 
         <h1>Portal page not found.</h1>
 
@@ -835,7 +1477,10 @@ function PortalNotFoundPage() {
           incorrect.
         </p>
 
-        <NavLink className="primary-button" to="/portal">
+        <NavLink
+          className="primary-button"
+          to="/portal"
+        >
           Back to Portal
         </NavLink>
       </div>
@@ -856,16 +1501,25 @@ function Layout() {
 
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/"
+            element={<HomePage />}
+          />
 
           <Route
             path="/announcements"
             element={<AnnouncementsPage />}
           />
 
-          <Route path="/events" element={<EventsPage />} />
+          <Route
+            path="/events"
+            element={<EventsPage />}
+          />
 
-          <Route path="/src" element={<SRCPage />} />
+          <Route
+            path="/src"
+            element={<SRCPage />}
+          />
 
           <Route
             path="/duties"
@@ -876,15 +1530,48 @@ function Layout() {
             }
           />
 
-          <Route path="/resources" element={<ResourcesPage />} />
+          <Route
+            path="/resources"
+            element={<ResourcesPage />}
+          />
 
-          <Route path="/feedback" element={<FeedbackPage />} />
+          <Route
+            path="/feedback"
+            element={<FeedbackPage />}
+          />
 
           <Route
             path="/portal"
             element={
               <ProtectedRoute requiredAccess="leadership">
                 <PortalPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/portal/calendar"
+            element={
+              <ProtectedRoute requiredAccess="leadership">
+                <CalendarPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/portal/duties"
+            element={
+              <ProtectedRoute requiredAccess="leadership">
+                <DutyTrackerPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/portal/feedback"
+            element={
+              <ProtectedRoute requiredAccess="leadership">
+                <FeedbackInboxPage />
               </ProtectedRoute>
             }
           />
@@ -898,7 +1585,10 @@ function Layout() {
             }
           />
 
-          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/login"
+            element={<LoginPage />}
+          />
 
           <Route
             path="*"

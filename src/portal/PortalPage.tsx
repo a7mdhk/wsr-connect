@@ -116,6 +116,7 @@ export default function PortalPage() {
   async function handleSignOut() {
     try {
       await signOutUser();
+
       navigate("/login", {
         replace: true,
       });
@@ -177,7 +178,8 @@ export default function PortalPage() {
               <h1
                 style={{
                   margin: "0 0 10px",
-                  fontSize: "clamp(30px, 5vw, 44px)",
+                  fontSize:
+                    "clamp(30px, 5vw, 44px)",
                   lineHeight: 1.05,
                   letterSpacing: "-0.03em",
                 }}
@@ -194,8 +196,9 @@ export default function PortalPage() {
                   lineHeight: 1.6,
                 }}
               >
-                The private working space for the four
-                senior SRC leaders.
+                The private working space
+                for the four senior SRC
+                leaders.
               </p>
             </div>
 
@@ -203,7 +206,8 @@ export default function PortalPage() {
               style={{
                 minWidth: "190px",
                 padding: "16px",
-                border: "1px solid rgba(255,255,255,0.2)",
+                border:
+                  "1px solid rgba(255,255,255,0.2)",
               }}
             >
               <span
@@ -258,7 +262,8 @@ export default function PortalPage() {
           <article
             style={{
               padding: "24px",
-              border: "1px solid #D9DDE1",
+              border:
+                "1px solid #D9DDE1",
               background: "#FFFFFF",
             }}
           >
@@ -282,7 +287,8 @@ export default function PortalPage() {
                 fontSize: "22px",
               }}
             >
-              No weekly priorities yet
+              No weekly priorities
+              yet
             </h2>
 
             <p
@@ -293,8 +299,9 @@ export default function PortalPage() {
                 fontSize: "14px",
               }}
             >
-              The current week's detailed priorities
-              will appear here once the leadership team
+              The current week's detailed
+              priorities will appear here
+              once the leadership team
               publishes them.
             </p>
           </article>
@@ -302,7 +309,8 @@ export default function PortalPage() {
           <article
             style={{
               padding: "24px",
-              border: "1px solid #D9DDE1",
+              border:
+                "1px solid #D9DDE1",
               background: "#FFFFFF",
             }}
           >
@@ -337,15 +345,17 @@ export default function PortalPage() {
                 fontSize: "14px",
               }}
             >
-              Leadership meetings and important
-              upcoming events will appear here.
+              Leadership meetings and
+              important upcoming events
+              will appear here.
             </p>
           </article>
 
           <article
             style={{
               padding: "24px",
-              border: "1px solid #D9DDE1",
+              border:
+                "1px solid #D9DDE1",
               background: "#FFFFFF",
             }}
           >
@@ -369,7 +379,8 @@ export default function PortalPage() {
                 fontSize: "22px",
               }}
             >
-              No progress reports yet
+              No progress reports
+              yet
             </h2>
 
             <p
@@ -380,8 +391,9 @@ export default function PortalPage() {
                 fontSize: "14px",
               }}
             >
-              Completed weekly reports will appear here
-              as the year progresses.
+              Completed weekly reports will
+              appear here as the year
+              progresses.
             </p>
           </article>
         </section>
@@ -429,6 +441,13 @@ export default function PortalPage() {
             }}
           >
             <SectionCard
+              eyebrow="Accountability"
+              title="Duty Tracker"
+              description="Track every SRC duty, location and assignment. Record completion or cover so no duty is left unaccounted for."
+              to="/portal/duties"
+            />
+
+            <SectionCard
               eyebrow="Planning"
               title="Weekly Priorities"
               description="Review the detailed priorities and targets for the current and previous weeks."
@@ -443,10 +462,24 @@ export default function PortalPage() {
             />
 
             <SectionCard
+              eyebrow="Schedule"
+              title="Calendar"
+              description="View and manage important school, SRC, meeting and leadership events."
+              to="/portal/calendar"
+            />
+
+            <SectionCard
               eyebrow="Review"
               title="Progress Reports"
               description="Review the weekly reports documenting progress, outcomes and follow-up actions."
               to="/portal/reports"
+            />
+
+            <SectionCard
+              eyebrow="Feedback"
+              title="Feedback Inbox"
+              description="Review student feedback, requests, concerns and follow-up items submitted through WSR Connect."
+              to="/portal/feedback"
             />
           </div>
         </section>
@@ -455,9 +488,11 @@ export default function PortalPage() {
           style={{
             marginTop: "48px",
             paddingTop: "24px",
-            borderTop: "1px solid #D9DDE1",
+            borderTop:
+              "1px solid #D9DDE1",
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent:
+              "space-between",
             alignItems: "center",
             gap: "16px",
             flexWrap: "wrap",
@@ -480,7 +515,8 @@ export default function PortalPage() {
             onClick={handleSignOut}
             style={{
               padding: "11px 16px",
-              border: "1px solid #D9DDE1",
+              border:
+                "1px solid #D9DDE1",
               background: "#FFFFFF",
               color: "#3F4348",
               font: "inherit",
